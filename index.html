@@ -7,6 +7,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
   :root{
+    /* 画面の高さを基準にUIの寸法を決める（全画面でもタブ付きでも崩れないように） */
+    --u: min(max(1px, calc(100vh / 420)), 1.6px);
+    --btn: calc(74 * var(--u));
+    --map: calc(170 * var(--u));
+    --gapS: calc(10 * var(--u));
     --ink:#10151c;
     --panel:rgba(14,20,28,0.82);
     --line:rgba(255,255,255,0.16);
@@ -25,15 +30,17 @@
   .hud{position:fixed;pointer-events:none;}
 
   /* 地図：右上 */
-  #mapWrap{top:calc(env(safe-area-inset-top) + 10px);right:calc(env(safe-area-inset-right) + 10px);
-    width:170px;pointer-events:auto;}
-  #mapCanvas{width:170px;height:170px;display:block;border-radius:4px;
+  #mapWrap{top:calc(env(safe-area-inset-top) + var(--gapS));
+    right:calc(env(safe-area-inset-right) + var(--gapS));
+    width:var(--map);pointer-events:auto;}
+  #mapCanvas{width:var(--map);height:var(--map);display:block;border-radius:4px;
     background:#1a2029;border:1px solid var(--line);}
-  #mapInfo{position:fixed;top:calc(env(safe-area-inset-top) + 10px);
-    right:calc(env(safe-area-inset-right) + 188px);width:184px;
+  #mapInfo{position:fixed;top:calc(env(safe-area-inset-top) + var(--gapS));
+    right:calc(env(safe-area-inset-right) + var(--map) + var(--gapS) * 1.8);
+    width:calc(190 * var(--u));
     background:var(--panel);border:1px solid var(--line);border-radius:4px;
-    padding:7px 9px;font-size:11px;line-height:1.7;font-variant-numeric:tabular-nums;
-    pointer-events:none;}
+    padding:calc(7*var(--u)) calc(9*var(--u));font-size:calc(11.5*var(--u));
+    line-height:1.7;font-variant-numeric:tabular-nums;pointer-events:none;}
   #mapInfo b{color:var(--amber);font-weight:600;}
 
   /* 左下：レバー */
@@ -49,12 +56,13 @@
   /* 運転モードのボタン */
   #driveWrap{inset:0;pointer-events:none;}
   #driveWrap.hide{display:none;}
-  .dbtn{position:absolute;width:74px;height:74px;border-radius:50%;pointer-events:auto;
+  .dbtn{position:absolute;width:var(--btn);height:var(--btn);border-radius:50%;pointer-events:auto;
     background:rgba(232,228,217,0.10);border:1.8px solid rgba(232,228,217,0.34);
     display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--paper);}
   .dbtn.on{background:var(--amber);border-color:var(--amber);color:#10151c;}
-  .dbtn .ic{font-size:24px;line-height:1;margin-bottom:9px;}
-  .dbtn small{font-size:10px;position:absolute;bottom:9px;opacity:.8;font-weight:700;
+  .dbtn .ic{font-size:calc(25*var(--u));line-height:1;margin-bottom:calc(9*var(--u));}
+  .dbtn small{font-size:calc(10.5*var(--u));position:absolute;bottom:calc(9*var(--u));
+    opacity:.8;font-weight:700;
     letter-spacing:.02em;white-space:nowrap;}
   .dbtn.brake{border-color:#e8503a;color:#f0907e;}
   .dbtn.brake.on{background:#e8503a;border-color:#e8503a;color:#fff;}
@@ -67,25 +75,25 @@
   /* 右下：操作ボタン */
   #actWrap{left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 22px);
     pointer-events:auto;display:flex;flex-direction:row-reverse;gap:12px;align-items:center;}
-  #btnDoor{position:fixed;min-width:0;width:104px;padding:14px 0;text-align:center;
-    border-radius:10px;background:rgba(20,26,34,0.92);border:2px solid var(--amber);
-    color:var(--amber);font-weight:700;font-size:14px;pointer-events:auto;display:none;
+  #btnDoor{position:fixed;min-width:0;width:calc(108*var(--u));padding:calc(14*var(--u)) 0;
+    text-align:center;border-radius:10px;background:rgba(20,26,34,0.92);border:2px solid var(--amber);
+    color:var(--amber);font-weight:700;font-size:calc(14.5*var(--u));pointer-events:auto;display:none;
     transition:color .15s,border-color .15s;}
   #btnDoor.far{border-color:rgba(140,148,158,.6);color:#8c949e;}
-  #btnNext{position:fixed;width:132px;padding:12px 0;text-align:center;border-radius:10px;
+  #btnNext{position:fixed;width:calc(138*var(--u));padding:calc(12*var(--u)) 0;text-align:center;border-radius:10px;
     background:rgba(20,26,34,0.92);border:2px solid #7ec98a;color:#7ec98a;
-    font-weight:700;font-size:13px;pointer-events:auto;display:none;}
-  #btnSwap{position:fixed;width:132px;padding:12px 0;text-align:center;border-radius:10px;
+    font-weight:700;font-size:calc(13.5*var(--u));pointer-events:auto;display:none;}
+  #btnSwap{position:fixed;width:calc(138*var(--u));padding:calc(12*var(--u)) 0;text-align:center;border-radius:10px;
     background:rgba(20,26,34,0.92);border:2px solid #4da3d6;color:#8fd0ff;
-    font-weight:700;font-size:13px;pointer-events:auto;display:none;}
+    font-weight:700;font-size:calc(13.5*var(--u));pointer-events:auto;display:none;}
   .act{min-width:84px;padding:13px 16px;border-radius:8px;text-align:center;font-size:14px;
     font-weight:600;border:1.5px solid var(--line);background:var(--panel);color:var(--paper);}
-  .act.p{position:fixed;display:none;width:74px;height:74px;min-width:0;padding:0;
-    border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;
-    gap:1px;font-size:26px;font-weight:800;letter-spacing:.02em;
+  .act.p{position:fixed;display:none;width:var(--btn);height:var(--btn);min-width:0;padding:0;
+    border-radius:calc(14*var(--u));flex-direction:column;align-items:center;justify-content:center;
+    gap:1px;font-size:calc(27*var(--u));font-weight:800;letter-spacing:.02em;
     background:rgba(20,26,34,0.9);color:#8fd0ff;border:2.5px solid #4da3d6;
     box-shadow:0 0 0 3px rgba(77,163,214,0.14);pointer-events:auto;}
-  .act.p em{font-size:9px;font-style:normal;font-weight:700;opacity:.8;letter-spacing:.08em;}
+  .act.p em{font-size:calc(9.5*var(--u));font-style:normal;font-weight:700;opacity:.8;letter-spacing:.08em;}
   .act.p.set{background:#4da3d6;color:#08131c;border-color:#a9dcf7;
     box-shadow:0 0 0 4px rgba(77,163,214,0.3);}
   .act.p.set{background:var(--amber);color:#10151c;border-color:var(--amber);}
@@ -93,21 +101,23 @@
   .act.hide{display:none;}
 
   /* 上部ステータス */
-  #status{top:calc(env(safe-area-inset-top) + 46px);left:calc(env(safe-area-inset-left) + 12px);
-    background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:7px 11px;
-    font-size:12px;line-height:1.6;font-variant-numeric:tabular-nums;}
-  #status .big{font-size:19px;font-weight:700;color:var(--amber);}
-  #status #stBin{font-size:11px;opacity:.85;}
+  #status{top:calc(env(safe-area-inset-top) + 46 * var(--u));
+    left:calc(env(safe-area-inset-left) + var(--gapS));
+    background:var(--panel);border:1px solid var(--line);border-radius:4px;
+    padding:calc(7*var(--u)) calc(11*var(--u));
+    font-size:calc(12.5*var(--u));line-height:1.6;font-variant-numeric:tabular-nums;}
+  #status .big{font-size:calc(20*var(--u));font-weight:700;color:var(--amber);}
+  #status #stBin{font-size:calc(11.5*var(--u));opacity:.85;}
   #status #stBin.soon{color:var(--amber);font-weight:700;opacity:1;}
   #status #stBin.over{color:var(--red);font-weight:700;opacity:1;}
   #status .row{display:flex;gap:14px;align-items:baseline;}
 
   /* トースト */
-  #speedo{position:fixed;width:168px;background:var(--panel);border:1px solid var(--line);
-    border-radius:6px;padding:6px 9px 7px;display:none;}
+  #speedo{position:fixed;width:calc(168*var(--u));background:var(--panel);border:1px solid var(--line);
+    border-radius:6px;padding:calc(6*var(--u)) calc(9*var(--u)) calc(7*var(--u));display:none;}
   #speedo .row{display:flex;align-items:baseline;gap:5px;font-variant-numeric:tabular-nums;}
-  #speedo b{font-size:23px;font-weight:800;color:var(--amber);line-height:1;}
-  #speedo span{font-size:10px;opacity:.65;}
+  #speedo b{font-size:calc(24*var(--u));font-weight:800;color:var(--amber);line-height:1;}
+  #speedo span{font-size:calc(10.5*var(--u));opacity:.65;}
   #speedo .bar{margin-top:5px;height:4px;border-radius:2px;background:rgba(255,255,255,.13);overflow:hidden;}
   #speedo .bar i{display:block;height:100%;width:0%;background:var(--amber);transition:width .08s linear;}
   #speedo.grass{border-color:rgba(126,201,138,.7);}
@@ -137,10 +147,10 @@
   #resultList .hl{color:var(--amber);}
 
   /* 調整パネル */
-  #topBtns{position:fixed;top:calc(env(safe-area-inset-top) + 10px);
-    left:calc(env(safe-area-inset-left) + 12px);z-index:30;display:flex;gap:8px;}
+  #topBtns{position:fixed;top:calc(env(safe-area-inset-top) + var(--gapS));
+    left:calc(env(safe-area-inset-left) + var(--gapS));z-index:30;display:flex;gap:8px;}
   #topBtns button{background:var(--panel);border:1px solid var(--line);border-radius:4px;
-    padding:6px 12px;font-size:11px;color:var(--paper);}
+    padding:calc(6*var(--u)) calc(12*var(--u));font-size:calc(11.5*var(--u));color:var(--paper);}
   #topBtns button.end{border-color:rgba(232,80,58,.7);color:#f0907e;}
   #topBtns button.armed{background:var(--red);color:#fff;border-color:var(--red);}
   #tune{position:fixed;inset:0;background:rgba(8,11,16,.95);z-index:50;padding:18px;overflow:auto;}
@@ -1521,7 +1531,7 @@ function endGame(reason){
 /* ============================================================
    入力
    ============================================================ */
-const STICK_R = 58, DEAD = 0.14;
+let STICK_R = 58; const DEAD = 0.14;
 const stick = {x:0, y:0};                       // レバーの傾き -1..1（徒歩）
 const drive = {l:false, r:false, f:false, b:false};   // 運転ボタン
 const kb = {u:false,d:false,l:false,r:false};   // PC確認用
@@ -1532,7 +1542,11 @@ const elStickWrap = document.getElementById("stickWrap");
 const elDriveWrap = document.getElementById("driveWrap");
 
 function setStickHome(){
-  const pad = 22;
+  const u = uiScale();
+  STICK_R = 58*u;
+  elBase.style.width = elBase.style.height = (STICK_R*2) + "px";
+  elKnob.style.width = elKnob.style.height = (52*u) + "px";
+  const pad = 22*u;
   stickHome = { x: pad + STICK_R, y: innerHeight - pad - STICK_R };
   if(stickId===null) placeStick(stickHome.x, stickHome.y);
   layoutDriveButtons();
@@ -1544,8 +1558,9 @@ function placeStick(cx,cy){
   moveKnob(0,0);
 }
 function moveKnob(dx,dy){
-  elKnob.style.left = (stickOrigin.x + dx - 26)+"px";
-  elKnob.style.top  = (stickOrigin.y + dy - 26)+"px";
+  const r = elKnob.offsetWidth/2 || 26;
+  elKnob.style.left = (stickOrigin.x + dx - r)+"px";
+  elKnob.style.top  = (stickOrigin.y + dy - r)+"px";
 }
 function stickSet(dx,dy){
   const len = Math.hypot(dx,dy);
@@ -1561,8 +1576,13 @@ function stickRelease(){
 }
 
 // 運転ボタンの配置：左半分にハンドル、右半分に前後
+function uiScale(){
+  return Math.min(1.6, Math.max(1.0, innerHeight / 420));
+}
+
 function layoutDriveButtons(){
-  const B = 74, pad = 24, bottom = innerHeight - pad - B;
+  const u = uiScale();
+  const B = 74*u, pad = 24*u, bottom = innerHeight - pad - B;
   const put = (id, x, y) => {
     const e = document.getElementById(id);
     e.style.left = x+"px"; e.style.top = y+"px";
@@ -1571,7 +1591,7 @@ function layoutDriveButtons(){
   put("dL", pad,          bottom);
   put("dR", pad + B + 20, bottom);
   // 前進・後退はミニマップの真下（右上から下ろした位置）
-  const gap = 20, right = 10;
+  const gap = 20*u, right = 10*u;
   put("dB", innerWidth - right - B,               bottom);   // 右端＝後退
   put("dF", innerWidth - right - B*2 - gap,       bottom);   // 中＝前進
   const pb = document.getElementById("btnP");
@@ -1580,18 +1600,17 @@ function layoutDriveButtons(){
   pb.style.top  = bottom + "px";
   // 降りる／車に乗る は P の真上
   const db = document.getElementById("btnDoor");
-  db.style.left = (px + B/2 - 52) + "px";
-  db.style.top  = (bottom - 62) + "px";
-  const nb2 = document.getElementById("btnNext");
-  nb2.style.left = (px + B/2 - 66) + "px";
-  nb2.style.top  = (bottom - 62 + 52) + "px";
-  const sw2 = document.getElementById("btnSwap");
-  sw2.style.left = (px + B/2 - 66) + "px";
-  sw2.style.top  = (bottom - 62 + 52) + "px";
+  db.style.left = (px + B/2 - 54*u) + "px";
+  db.style.top  = (bottom - 62*u) + "px";
+  for(const id of ["btnNext","btnSwap"]){
+    const e = document.getElementById(id);
+    e.style.left = (px + B/2 - 69*u) + "px";
+    e.style.top  = (bottom - 62*u + 52*u) + "px";
+  }
   // スピードメーターは前進・後退の真上
   const sp = document.getElementById("speedo");
   sp.style.left = (innerWidth - right - B*2 - gap) + "px";
-  sp.style.top  = (bottom - 52) + "px";
+  sp.style.top  = (bottom - 54*u) + "px";
 }
 
 function bindDrive(id, key){
@@ -2767,6 +2786,8 @@ buildTune();
    ============================================================ */
 function resize(){
   const w = innerWidth, h = innerHeight;
+  const mapPx = Math.round(170 * uiScale() * Math.min(devicePixelRatio, 2));
+  if(mapC.width !== mapPx){ mapC.width = mapPx; mapC.height = mapPx; }
   renderer.setSize(w,h);
   camera.aspect = w/h; camera.updateProjectionMatrix();
   setStickHome();
