@@ -30,13 +30,13 @@
   .hud{position:fixed;pointer-events:none;}
 
   /* 地図：右上 */
-  #mapWrap{top:calc(env(safe-area-inset-top) + var(--gapS));
-    right:calc(env(safe-area-inset-right) + var(--gapS));
+  #mapWrap{top:calc(env(safe-area-inset-top) + 6 * var(--u));
+    right:calc(env(safe-area-inset-right) + 6 * var(--u));
     width:var(--map);pointer-events:auto;}
   #mapCanvas{width:var(--map);height:var(--map);display:block;border-radius:4px;
     background:#1a2029;border:1px solid var(--line);}
-  #mapInfo{position:fixed;top:calc(env(safe-area-inset-top) + var(--gapS));
-    right:calc(env(safe-area-inset-right) + var(--map) + var(--gapS) * 1.8);
+  #mapInfo{position:fixed;top:calc(env(safe-area-inset-top) + 6 * var(--u));
+    right:calc(env(safe-area-inset-right) + var(--map) + 12 * var(--u));
     width:calc(190 * var(--u));
     background:var(--panel);border:1px solid var(--line);border-radius:4px;
     padding:calc(7*var(--u)) calc(9*var(--u));font-size:calc(11.5*var(--u));
@@ -1546,8 +1546,9 @@ function setStickHome(){
   STICK_R = 58*u;
   elBase.style.width = elBase.style.height = (STICK_R*2) + "px";
   elKnob.style.width = elKnob.style.height = (52*u) + "px";
-  const pad = 22*u;
-  stickHome = { x: pad + STICK_R, y: innerHeight - pad - STICK_R };
+  const sideInset = Math.max(22*u, innerWidth * 0.05);
+  const bottomInset = Math.max(20*u, innerHeight * 0.045);
+  stickHome = { x: sideInset + STICK_R, y: innerHeight - bottomInset - STICK_R };
   if(stickId===null) placeStick(stickHome.x, stickHome.y);
   layoutDriveButtons();
 }
@@ -1582,20 +1583,25 @@ function uiScale(){
 
 function layoutDriveButtons(){
   const u = uiScale();
-  const B = 74*u, pad = 24*u, bottom = innerHeight - pad - B;
+  const B = 74*u;
+  // 画面が広いほど端から内側へ寄せる（親指の可動域に収める）
+  const sideInset = Math.max(24*u, innerWidth * 0.055);
+  const bottomInset = Math.max(20*u, innerHeight * 0.045);
+  const pad = sideInset, bottom = innerHeight - bottomInset - B;
   const put = (id, x, y) => {
     const e = document.getElementById(id);
     e.style.left = x+"px"; e.style.top = y+"px";
   };
-  // ハンドルは左下
-  put("dL", pad,          bottom);
-  put("dR", pad + B + 20, bottom);
+  // ハンドルは左下（ボタン1個分だけ内側へ）
+  const step = B + 20*u;
+  put("dL", pad + step,          bottom);
+  put("dR", pad + step + B + 20*u, bottom);
   // 前進・後退はミニマップの真下（右上から下ろした位置）
-  const gap = 20*u, right = 10*u;
-  put("dB", innerWidth - right - B,               bottom);   // 右端＝後退
-  put("dF", innerWidth - right - B*2 - gap,       bottom);   // 中＝前進
+  const gap = 20*u, right = sideInset;
+  put("dB", innerWidth - right - B   - step,       bottom);   // 右＝後退
+  put("dF", innerWidth - right - B*2 - gap - step, bottom);   // 中＝前進
   const pb = document.getElementById("btnP");
-  const px = innerWidth - right - B*3 - gap*2;               // 左＝P
+  const px = innerWidth - right - B*3 - gap*2 - step;        // 左＝P
   pb.style.left = px + "px";
   pb.style.top  = bottom + "px";
   // 降りる／車に乗る は P の真上
@@ -1607,10 +1613,11 @@ function layoutDriveButtons(){
     e.style.left = (px + B/2 - 69*u) + "px";
     e.style.top  = (bottom - 62*u + 52*u) + "px";
   }
-  // スピードメーターは前進・後退の真上
+  // スピードメーターはミニマップの真下（中央揃え）
   const sp = document.getElementById("speedo");
-  sp.style.left = (innerWidth - right - B*2 - gap) + "px";
-  sp.style.top  = (bottom - 54*u) + "px";
+  const mapW = 170*u, mapRight = 6*u, spW = 168*u;
+  sp.style.left = (innerWidth - mapRight - mapW + (mapW - spW)/2) + "px";
+  sp.style.top  = (6*u + mapW + 6*u) + "px";
 }
 
 function bindDrive(id, key){
