@@ -3,16 +3,19 @@
    - 部屋 Map(code → {host, guest, createdAt, lastActive})。4 桁コード（生存部屋と衝突しないよう再抽選）
    - hello で作成／参加。hello 以外は中身を見ずに相手へ転送（相手不在なら捨てる）
    - ping/pong 5s、30s 無応答で terminate。席は切断後 30s 保持（clientId で復帰。古い半開きは閉じて新しい方に席）
-   - 両方不在 30s か作成 2h で部屋削除。4KB 上限・JSON 以外は切断・bufferedAmount > 64KB で pose を捨てる
+   - 両方不在 30s か作成 2h で部屋削除。64KB 上限（sync のため）・JSON 以外は切断・bufferedAmount > 64KB で pose を捨てる
    - peerLeft / error{code}（no_room / full / no_host / bad_hello）
+   - bye（#27 §8）：席を即座に空ける（30s の保持なし）。相手には peerLeft{bye:true}
+   - welcome に v（プロトコル版）。v:2 ＝ 64KB 上限＋bye。クライアントは v が無い／古いと「サーバーが古いです」を出す
    永続化なし。認証なし（友達限定・4 桁コード。docs/38 §10-1） */
 "use strict";
 const http = require("http");
 const { WebSocketServer } = require("ws");
 
 const PORT = Number(process.env.PORT) || 8787;
+const PROTO_V = 2;   // welcome{v}。1＝初版（4KB・bye なし）、2＝64KB 上限＋bye（#28）
 const PING_MS = 5000, DEAD_MS = 30000, SEAT_HOLD_MS = 30000, ROOM_TTL_MS = 2 * 60 * 60 * 1000;
-const MAX_BYTES = 4096, MAX_BUFFERED = 64 * 1024;
+const MAX_BYTES = 64 * 1024, MAX_BUFFERED = 64 * 1024;   // sync（荷物 150 件 ≈ 20KB）が通るよう 64KB（docs/38 の 4KB から変更。#28）
 
 const rooms = new Map();   // code → { code, host:Seat|null, guest:Seat|null, createdAt, lastActive }
 // Seat: { clientId, name, equipped, paint, ws|null, leftAt|null }
@@ -40,7 +43,7 @@ function attach(ws, room, role, seat){
   ws.room = room; ws.role = role; ws.seat = seat; seat.ws = ws; seat.leftAt = null;
   room.lastActive = now();
   const peer = other(room, role);
-  send(ws, { t:"welcome", role, code:room.code, peer: seatInfo(peer) });
+  send(ws, { t:"welcome", v:PROTO_V, role, code:room.code, peer: seatInfo(peer) });
   if(peer && peer.ws) send(peer.ws, { t:"peer", peer: seatInfo(seat) });   // 合流・復帰を相手へ
 }
 
@@ -82,6 +85,7 @@ wss.on("connection", ws => {
     if(!m || typeof m.t !== "string") return ws.close();
     if(m.t === "hello") return onHello(ws, m);
     if(m.t === "pong"){ ws.lastPong = now(); return; }
+    if(m.t === "bye"){ detach(ws, true); return ws.close(); }
     const room = ws.room; if(!room || !ws.seat) return;
     room.lastActive = now();
     const peer = other(room, ws.role);
@@ -93,13 +97,15 @@ wss.on("connection", ws => {
   ws.on("error", () => detach(ws));
 });
 
-function detach(ws){
+function detach(ws, bye = false){
   const room = ws.room, seat = ws.seat;
   if(!room || !seat || seat.ws !== ws) return;
   seat.ws = null; seat.leftAt = now();
-  ws.seat = null;
+  ws.seat = null; ws.room = null;
+  if(bye) room[ws.role] = null;                     // 精算＝退室：席を即座に空ける（再入室は新しい席で）
   const peer = other(room, ws.role);
-  if(peer && peer.ws) send(peer.ws, { t:"peerLeft", role: ws.role, hold: SEAT_HOLD_MS });
+  if(peer && peer.ws) send(peer.ws, { t:"peerLeft", role: ws.role, hold: bye ? 0 : SEAT_HOLD_MS, bye });
+  if(bye && ws.role === "host" && !room.guest) rooms.delete(room.code);
 }
 
 // ハートビートと掃除
