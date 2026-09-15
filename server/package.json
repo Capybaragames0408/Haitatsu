@@ -1,0 +1,11 @@
+{
+  "name": "hdsim-relay",
+  "version": "0.1.0",
+  "private": true,
+  "description": "home delivery simulator 協力プレイの中継サーバー（部屋コードで 2 台を繋いでメッセージを転送するだけ）",
+  "main": "index.js",
+  "type": "commonjs",
+  "engines": { "node": ">=20" },
+  "scripts": { "start": "node index.js" },
+  "dependencies": { "ws": "^8.18.0" }
+}
