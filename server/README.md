@@ -28,7 +28,9 @@ iOS 実機は `Info.plist` の `NSAllowsLocalNetworking` で LAN の平文 `ws:/
 
 ## 仕様（docs/38 §10-3）
 - `GET /health` → `ok`。同じポートで WebSocket。`PORT` 環境変数。
-- `hello {room?, clientId, name, equipped, paint}`：`room` なしで作成（`welcome{v, role:"host", code}`）、ありで参加（`welcome{v, role:"guest", code, peer}`）。相手には `peer{...}`。`v` はプロトコル版（現在 2。無ければ旧版）。
+- `GET /stats` → `{rooms, players, list:[{code, names, since}]}`（JSON）。`https://haitatsu-relay.onrender.com/stats` を開けば今遊んでいる人が分かる（切断中の席は名前に「（切断）」）。
+- 部屋の作成（create）・参加（join）・復帰（rejoin）・退室（leave）・切断（disconnect）・消滅（expire）を `console.log`（ISO 時刻・部屋コード・役割・名前）。Render の **Logs** タブで見える。
+- `hello {room?, clientId, name, equipped, paint, build}`：`room` なしで作成（`welcome{v, role:"host", code}`）、ありで参加（`welcome{v, role:"guest", code, peer}`）。相手には `peer{...}`（`build` も含む。アプリの版違い警告用）。`v` はプロトコル版（現在 3。無ければ旧版）。
 - `hello` 以外は中身を見ずに相手へ転送。相手不在なら捨てる。`pose` は相手の送信バッファが 64KB を超えていれば捨てる。
 - 64KB 上限（`sync` は荷物 150 件で約 20KB）、JSON 以外は切断。ping 5s、無応答で terminate。席は切断後 30s 保持（同じ `clientId` で復帰。古い半開きは閉じる）。
 - `peerLeft{role, hold}`／`error{code: no_room | full | no_host | bad_hello}`。両方不在 30s か作成 2h で部屋削除。
