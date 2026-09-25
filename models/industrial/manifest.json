@@ -1,0 +1,809 @@
+{
+ "origin_note": "origin = lot center (x,z). no rotation. game axes.",
+ "companies": [
+  {
+   "id": 4001,
+   "name": "HD プレカット",
+   "industry": "木材・プレカット工場",
+   "shape": "two",
+   "origin": {
+    "x": -27.0,
+    "z": 29.0
+   },
+   "nodes": [
+    "Static",
+    "Windows",
+    "Sign",
+    "Shutter_Up",
+    "Shutter_Down",
+    "Gate_Open",
+    "Gate_Closed"
+   ],
+   "triangles": {
+    "Static": 2892,
+    "Windows": 16,
+    "Sign": 222,
+    "Shutter_Up": 24,
+    "Shutter_Down": 102,
+    "Gate_Open": 168,
+    "Gate_Closed": 252
+   },
+   "solids": [
+    {
+     "x": -27.0,
+     "z": 42.75,
+     "w": 3.4,
+     "d": 14.5,
+     "h": 2.2,
+     "tag": "lumber"
+    },
+    {
+     "x": -22.8,
+     "z": 32.0,
+     "w": 3.4,
+     "d": 1.2,
+     "h": 1.9,
+     "tag": "lumber"
+    },
+    {
+     "x": -13.7,
+     "z": 32.0,
+     "w": 3.4,
+     "d": 1.2,
+     "h": 1.9,
+     "tag": "lumber"
+    },
+    {
+     "x": -27.0,
+     "z": 32.15,
+     "w": 1.4,
+     "d": 2.7,
+     "h": 2.4,
+     "tag": "forklift"
+    },
+    {
+     "x": -10.9,
+     "z": 45.5,
+     "w": 1.3,
+     "d": 1.3,
+     "h": 7.0,
+     "tag": "cyclone"
+    },
+    {
+     "x": -29.478,
+     "z": 5.05,
+     "w": 3.1,
+     "d": 0.22,
+     "h": 2.8,
+     "tag": "sign"
+    }
+   ]
+  },
+  {
+   "id": 4002,
+   "name": "HD ロジスティクス",
+   "industry": "物流倉庫",
+   "shape": "U",
+   "origin": {
+    "x": -75.0,
+    "z": 29.0
+   },
+   "nodes": [
+    "Static",
+    "Windows",
+    "Sign",
+    "Shutter_Up",
+    "Shutter_Down",
+    "Gate_Open",
+    "Gate_Closed"
+   ],
+   "triangles": {
+    "Static": 4040,
+    "Windows": 24,
+    "Sign": 258,
+    "Shutter_Up": 36,
+    "Shutter_Down": 150,
+    "Gate_Open": 168,
+    "Gate_Closed": 252
+   },
+   "solids": [
+    {
+     "x": -80.014,
+     "z": 19.5,
+     "w": 1.5,
+     "d": 2.8,
+     "h": 1.1,
+     "tag": "pallets"
+    },
+    {
+     "x": -68.064,
+     "z": 19.5,
+     "w": 1.2,
+     "d": 3.2,
+     "h": 1.7,
+     "tag": "carts"
+    },
+    {
+     "x": -69.764,
+     "z": 25.25,
+     "w": 2.6,
+     "d": 1.5,
+     "h": 2.4,
+     "tag": "forklift"
+    },
+    {
+     "x": -92.45,
+     "z": 13.5,
+     "w": 2.5,
+     "d": 6.0,
+     "h": 2.6,
+     "tag": "container"
+    },
+    {
+     "x": -92.6,
+     "z": 8.25,
+     "w": 1.2,
+     "d": 2.5,
+     "h": 1.4,
+     "tag": "pallets"
+    },
+    {
+     "x": -55.05,
+     "z": 28.043,
+     "w": 0.22,
+     "d": 3.1,
+     "h": 2.8,
+     "tag": "sign"
+    }
+   ]
+  },
+  {
+   "id": 4003,
+   "name": "HD パイプ",
+   "industry": "配管資材",
+   "shape": "rect",
+   "origin": {
+    "x": -27.0,
+    "z": 87.0
+   },
+   "nodes": [
+    "Static",
+    "Windows",
+    "Sign",
+    "Shutter_Up",
+    "Shutter_Down",
+    "Gate_Open",
+    "Gate_Closed"
+   ],
+   "triangles": {
+    "Static": 3052,
+    "Windows": 20,
+    "Sign": 192,
+    "Shutter_Up": 24,
+    "Shutter_Down": 100,
+    "Gate_Open": 168,
+    "Gate_Closed": 252
+   },
+   "solids": [
+    {
+     "x": -43.65,
+     "z": 80.5,
+     "w": 1.5,
+     "d": 1.0,
+     "h": 5.5,
+     "tag": "pipes"
+    },
+    {
+     "x": -43.65,
+     "z": 73.5,
+     "w": 1.5,
+     "d": 1.0,
+     "h": 5.5,
+     "tag": "pipes"
+    },
+    {
+     "x": -10.35,
+     "z": 76.5,
+     "w": 1.5,
+     "d": 1.0,
+     "h": 5.5,
+     "tag": "pipes"
+    },
+    {
+     "x": -35.0,
+     "z": 64.5,
+     "w": 6.0,
+     "d": 1.0,
+     "h": 0.8,
+     "tag": "pipes"
+    },
+    {
+     "x": -20.0,
+     "z": 64.5,
+     "w": 6.0,
+     "d": 1.0,
+     "h": 0.8,
+     "tag": "pipes"
+    },
+    {
+     "x": -39.582,
+     "z": 110.95,
+     "w": 3.1,
+     "d": 0.22,
+     "h": 2.8,
+     "tag": "sign"
+    }
+   ]
+  },
+  {
+   "id": 4004,
+   "name": "HD 溶接",
+   "industry": "溶接・鉄工",
+   "shape": "L",
+   "origin": {
+    "x": -75.0,
+    "z": 87.0
+   },
+   "nodes": [
+    "Static",
+    "Windows",
+    "Sign",
+    "Shutter_Up",
+    "Shutter_Down",
+    "Gate_Open",
+    "Gate_Closed"
+   ],
+   "triangles": {
+    "Static": 3332,
+    "Windows": 56,
+    "Sign": 348,
+    "Shutter_Up": 12,
+    "Shutter_Down": 50,
+    "Gate_Open": 168,
+    "Gate_Closed": 252
+   },
+   "solids": [
+    {
+     "x": -77.666,
+     "z": 93.75,
+     "w": 3.0,
+     "d": 3.3,
+     "h": 1.3,
+     "tag": "hbeams"
+    },
+    {
+     "x": -68.266,
+     "z": 95.3,
+     "w": 1.6,
+     "d": 0.8,
+     "h": 1.8,
+     "tag": "gas"
+    },
+    {
+     "x": -64.166,
+     "z": 94.1,
+     "w": 3.4,
+     "d": 1.8,
+     "h": 1.5,
+     "tag": "skip"
+    },
+    {
+     "x": -62.666,
+     "z": 90.1,
+     "w": 0.5,
+     "d": 0.5,
+     "h": 5.2,
+     "tag": "crane"
+    },
+    {
+     "x": -77.866,
+     "z": 90.1,
+     "w": 1.6,
+     "d": 1.0,
+     "h": 1.1,
+     "tag": "bench"
+    },
+    {
+     "x": -57.5,
+     "z": 102.5,
+     "w": 1.2,
+     "d": 6.0,
+     "h": 1.3,
+     "tag": "hbeams"
+    },
+    {
+     "x": -93.0,
+     "z": 100.5,
+     "w": 1.0,
+     "d": 1.6,
+     "h": 1.8,
+     "tag": "gas"
+    },
+    {
+     "x": -55.05,
+     "z": 82.091,
+     "w": 0.22,
+     "d": 3.1,
+     "h": 2.8,
+     "tag": "sign"
+    }
+   ]
+  },
+  {
+   "id": 4005,
+   "name": "HD 板金塗装",
+   "industry": "自動車板金・塗装",
+   "shape": "rect",
+   "origin": {
+    "x": -27.0,
+    "z": 145.0
+   },
+   "nodes": [
+    "Static",
+    "Windows",
+    "Sign",
+    "Shutter_Up",
+    "Shutter_Down",
+    "Gate_Open",
+    "Gate_Closed"
+   ],
+   "triangles": {
+    "Static": 2972,
+    "Windows": 18,
+    "Sign": 456,
+    "Shutter_Up": 24,
+    "Shutter_Down": 100,
+    "Gate_Open": 168,
+    "Gate_Closed": 252
+   },
+   "solids": [
+    {
+     "x": -36.95,
+     "z": 122.5,
+     "w": 3.1,
+     "d": 0.8,
+     "h": 0.9,
+     "tag": "drums"
+    },
+    {
+     "x": -27.65,
+     "z": 122.5,
+     "w": 1.7,
+     "d": 0.8,
+     "h": 0.9,
+     "tag": "drums"
+    },
+    {
+     "x": -20.0,
+     "z": 122.5,
+     "w": 1.6,
+     "d": 0.8,
+     "h": 1.5,
+     "tag": "compressor"
+    },
+    {
+     "x": -43.35,
+     "z": 138.0,
+     "w": 0.8,
+     "d": 1.8,
+     "h": 1.0,
+     "tag": "tires"
+    },
+    {
+     "x": -10.65,
+     "z": 131.5,
+     "w": 0.8,
+     "d": 1.8,
+     "h": 1.0,
+     "tag": "tires"
+    },
+    {
+     "x": -34.102,
+     "z": 168.95,
+     "w": 3.1,
+     "d": 0.22,
+     "h": 2.8,
+     "tag": "sign"
+    }
+   ]
+  },
+  {
+   "id": 4006,
+   "name": "HD フーズ",
+   "industry": "食品工場",
+   "shape": "rect",
+   "origin": {
+    "x": -75.0,
+    "z": 145.0
+   },
+   "nodes": [
+    "Static",
+    "Windows",
+    "Sign",
+    "Shutter_Up",
+    "Shutter_Down",
+    "Gate_Open",
+    "Gate_Closed"
+   ],
+   "triangles": {
+    "Static": 3436,
+    "Windows": 16,
+    "Sign": 134,
+    "Shutter_Up": 24,
+    "Shutter_Down": 100,
+    "Gate_Open": 168,
+    "Gate_Closed": 252
+   },
+   "solids": [
+    {
+     "x": -58.1,
+     "z": 138.5,
+     "w": 3.0,
+     "d": 3.0,
+     "h": 10.5,
+     "tag": "silo"
+    },
+    {
+     "x": -58.1,
+     "z": 134.1,
+     "w": 3.0,
+     "d": 3.0,
+     "h": 10.5,
+     "tag": "silo"
+    },
+    {
+     "x": -58.1,
+     "z": 128.5,
+     "w": 2.0,
+     "d": 5.0,
+     "h": 2.6,
+     "tag": "tank"
+    },
+    {
+     "x": -57.4,
+     "z": 124.25,
+     "w": 1.2,
+     "d": 2.5,
+     "h": 1.5,
+     "tag": "crates"
+    },
+    {
+     "x": -55.05,
+     "z": 149.141,
+     "w": 0.22,
+     "d": 3.1,
+     "h": 2.8,
+     "tag": "sign"
+    }
+   ]
+  },
+  {
+   "id": 4007,
+   "name": "HD 建材",
+   "industry": "建設資材",
+   "shape": "L",
+   "origin": {
+    "x": -27.0,
+    "z": 203.0
+   },
+   "nodes": [
+    "Static",
+    "Windows",
+    "Sign",
+    "Shutter_Up",
+    "Shutter_Down",
+    "Gate_Open",
+    "Gate_Closed"
+   ],
+   "triangles": {
+    "Static": 3362,
+    "Windows": 20,
+    "Sign": 326,
+    "Shutter_Up": 12,
+    "Shutter_Down": 50,
+    "Gate_Open": 168,
+    "Gate_Closed": 252
+   },
+   "solids": [
+    {
+     "x": -39.65,
+     "z": 208.85,
+     "w": 2.9,
+     "d": 4.9,
+     "h": 1.5,
+     "tag": "blocks"
+    },
+    {
+     "x": -28.6,
+     "z": 206.5,
+     "w": 5.0,
+     "d": 1.0,
+     "h": 1.2,
+     "tag": "rebar"
+    },
+    {
+     "x": -30.5,
+     "z": 210.15,
+     "w": 1.4,
+     "d": 2.7,
+     "h": 2.4,
+     "tag": "forklift"
+    },
+    {
+     "x": -25.8,
+     "z": 210.2,
+     "w": 1.2,
+     "d": 2.6,
+     "h": 1.4,
+     "tag": "bags"
+    },
+    {
+     "x": -37.35,
+     "z": 225.5,
+     "w": 2.5,
+     "d": 1.0,
+     "h": 1.4,
+     "tag": "bags"
+    },
+    {
+     "x": -29.35,
+     "z": 225.5,
+     "w": 2.5,
+     "d": 1.0,
+     "h": 1.4,
+     "tag": "bags"
+    },
+    {
+     "x": -44.95,
+     "z": 187.637,
+     "w": 0.22,
+     "d": 3.1,
+     "h": 2.8,
+     "tag": "sign"
+    }
+   ]
+  },
+  {
+   "id": 4008,
+   "name": "HD 精密",
+   "industry": "精密機械",
+   "shape": "U",
+   "origin": {
+    "x": -75.0,
+    "z": 203.0
+   },
+   "nodes": [
+    "Static",
+    "Windows",
+    "Sign",
+    "Shutter_Up",
+    "Shutter_Down",
+    "Gate_Open",
+    "Gate_Closed"
+   ],
+   "triangles": {
+    "Static": 3374,
+    "Windows": 34,
+    "Sign": 324,
+    "Shutter_Up": 12,
+    "Shutter_Down": 48,
+    "Gate_Open": 168,
+    "Gate_Closed": 252
+   },
+   "solids": [
+    {
+     "x": -78.269,
+     "z": 211.7,
+     "w": 0.4,
+     "d": 0.6,
+     "h": 3.5,
+     "tag": "post"
+    },
+    {
+     "x": -70.469,
+     "z": 211.7,
+     "w": 0.4,
+     "d": 0.6,
+     "h": 3.5,
+     "tag": "post"
+    },
+    {
+     "x": -79.969,
+     "z": 205.7,
+     "w": 2.0,
+     "d": 0.6,
+     "h": 0.9,
+     "tag": "planter"
+    },
+    {
+     "x": -68.769,
+     "z": 205.7,
+     "w": 2.0,
+     "d": 0.6,
+     "h": 0.9,
+     "tag": "planter"
+    },
+    {
+     "x": -92.9,
+     "z": 217.5,
+     "w": 1.6,
+     "d": 1.6,
+     "h": 3.4,
+     "tag": "tank"
+    },
+    {
+     "x": -57.4,
+     "z": 218.5,
+     "w": 2.2,
+     "d": 6.0,
+     "h": 2.4,
+     "tag": "bikeshed"
+    },
+    {
+     "x": -55.05,
+     "z": 184.481,
+     "w": 0.22,
+     "d": 3.1,
+     "h": 2.8,
+     "tag": "sign"
+    }
+   ]
+  },
+  {
+   "id": 4009,
+   "name": "HD リサイクル",
+   "industry": "リサイクル・スクラップ",
+   "shape": "two",
+   "origin": {
+    "x": -27.0,
+    "z": 261.0
+   },
+   "nodes": [
+    "Static",
+    "Windows",
+    "Sign",
+    "Shutter_Up",
+    "Shutter_Down",
+    "Gate_Open",
+    "Gate_Closed"
+   ],
+   "triangles": {
+    "Static": 2910,
+    "Windows": 18,
+    "Sign": 214,
+    "Shutter_Up": 24,
+    "Shutter_Down": 108,
+    "Gate_Open": 168,
+    "Gate_Closed": 252
+   },
+   "solids": [
+    {
+     "x": -27.0,
+     "z": 271.25,
+     "w": 2.0,
+     "d": 8.1,
+     "h": 1.6,
+     "tag": "skips"
+    },
+    {
+     "x": -27.05,
+     "z": 278.65,
+     "w": 2.7,
+     "d": 2.7,
+     "h": 2.2,
+     "tag": "bales"
+    },
+    {
+     "x": -39.9,
+     "z": 264.1,
+     "w": 2.8,
+     "d": 1.0,
+     "h": 1.1,
+     "tag": "tires"
+    },
+    {
+     "x": -31.2,
+     "z": 264.05,
+     "w": 3.6,
+     "d": 1.9,
+     "h": 1.6,
+     "tag": "skip"
+    },
+    {
+     "x": -38.5,
+     "z": 283.5,
+     "w": 6.0,
+     "d": 1.0,
+     "h": 1.1,
+     "tag": "bales"
+    },
+    {
+     "x": -44.95,
+     "z": 252.955,
+     "w": 0.22,
+     "d": 3.1,
+     "h": 2.8,
+     "tag": "sign"
+    }
+   ]
+  },
+  {
+   "id": 4010,
+   "name": "HD 電設",
+   "industry": "電気設備・ケーブル",
+   "shape": "L",
+   "origin": {
+    "x": -75.0,
+    "z": 261.0
+   },
+   "nodes": [
+    "Static",
+    "Windows",
+    "Sign",
+    "Shutter_Up",
+    "Shutter_Down",
+    "Gate_Open",
+    "Gate_Closed"
+   ],
+   "triangles": {
+    "Static": 3430,
+    "Windows": 20,
+    "Sign": 324,
+    "Shutter_Up": 12,
+    "Shutter_Down": 50,
+    "Gate_Open": 168,
+    "Gate_Closed": 252
+   },
+   "solids": [
+    {
+     "x": -73.888,
+     "z": 255.25,
+     "w": 4.8,
+     "d": 5.9,
+     "h": 2.2,
+     "tag": "drums"
+    },
+    {
+     "x": -68.088,
+     "z": 256.9,
+     "w": 5.2,
+     "d": 2.6,
+     "h": 2.2,
+     "tag": "drums"
+    },
+    {
+     "x": -68.388,
+     "z": 253.2,
+     "w": 2.4,
+     "d": 1.2,
+     "h": 2.3,
+     "tag": "cubicle"
+    },
+    {
+     "x": -92.6,
+     "z": 248.3,
+     "w": 2.0,
+     "d": 4.4,
+     "h": 1.8,
+     "tag": "drums"
+    },
+    {
+     "x": -92.8,
+     "z": 242.0,
+     "w": 1.4,
+     "d": 7.0,
+     "h": 0.8,
+     "tag": "poles"
+    },
+    {
+     "x": -75.867,
+     "z": 284.95,
+     "w": 3.1,
+     "d": 0.22,
+     "h": 2.8,
+     "tag": "sign"
+    }
+   ]
+  }
+ ]
+}
