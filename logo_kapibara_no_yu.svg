@@ -1,0 +1,24 @@
+<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-label="かぴばらの湯">
+  <!-- 会社のロゴ「かぴばらの湯」：マーク C（輪の上を開けた湯船＝口が上の C）・湯気 3 本（2026-09-29 ユーザー決定） -->
+  <defs><clipPath id="yuAbove"><path d="M0 0H120V66.5 q-5 -3 -10 0 t-10 0 t-10 0 t-10 0 t-10 0 t-10 0 t-10 0 t-10 0 t-10 0 t-10 0 t-10 0 t-10 0 Z"/></clipPath></defs>
+  <g transform="translate(60 62) scale(1.12) translate(-60 -64)">
+    <g clip-path="url(#yuAbove)">
+      <path d="M27 84 C25 64 31 45 47 40 C52 38.4 58 38 64 38 L71 38 C80 38 87 43 89 51 L90.4 58 C91.2 62.4 89 65.4 85 66 L81.6 66.4 C80 70 80.6 76 82 84 Z" fill="#ffb648"/>
+      <ellipse cx="46.5" cy="39.5" rx="5.2" ry="4.6" fill="#ffb648"/>
+      <ellipse cx="46.8" cy="40.2" rx="2.3" ry="2" fill="#10151c" opacity=".35"/>
+      <circle cx="70" cy="51" r="2.9" fill="#10151c"/>
+      <rect x="83.4" y="53.6" width="4.6" height="3.4" rx="1.5" fill="#10151c"/>
+    </g>
+    <g transform="translate(60 0) scale(1.12 1) translate(-60 0)" fill="none" stroke-linecap="round">
+      <path d="M26 66.5 q5 -3 10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t8 0" stroke="#10151c" stroke-width="5.4"/>
+      <path d="M26 66.5 q5 -3 10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t8 0" stroke="#ffb648" stroke-width="2.2"/>
+    </g>
+    <path d="M44 84 q4 -2.6 8 0 t8 0 t8 0 t8 0" fill="none" stroke="#ffb648" stroke-width="2" stroke-linecap="round" opacity=".55"/>
+  </g>
+  <path d="M38.9 16.7 A50 50 0 1 0 81.1 16.7" fill="none" stroke="#ffb648" stroke-width="3.4" stroke-linecap="round"/>
+  <g transform="translate(0 -6) scale(1 .92)" fill="none" stroke="#ffb648" stroke-width="2.6" stroke-linecap="round">
+    <path d="M47.5 28 c-4.2 -4 4.2 -7 0 -11 c-3 -2.8 -1 -5.4 1 -7" opacity=".75"/>
+    <path d="M60 30 c-4.8 -4.6 4.8 -8 0 -12.6 c-3.4 -3.2 -1 -6.4 1.2 -8.2"/>
+    <path d="M72.5 28 c-4.2 -4 4.2 -7 0 -11 c-3 -2.8 -1 -5.4 1 -7" opacity=".75"/>
+  </g>
+</svg>
