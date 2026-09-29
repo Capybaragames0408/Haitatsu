@@ -1,0 +1,198 @@
+{
+ "origin_note": "origin = footprint center on the ground. front = +z, door x=0, plate x=1.35 (same as house local). nodes: Static / Sign (lit at night) / Windows (office: day lit, dark after 17:00) / Open24 (conbini: lit at night).",
+ "shops": [
+  {
+   "id": "cafe",
+   "name": "喫茶店",
+   "sign": "喫茶 かぴばら",
+   "w": 9.5,
+   "d": 8.5,
+   "h": 4.3,
+   "roof": "hip",
+   "fence": "low",
+   "nodes": [
+    "Static",
+    "Sign"
+   ],
+   "tris": {
+    "Static": 770,
+    "Sign": 252
+   },
+   "tris_total": 1022,
+   "text_tris": 308
+  },
+  {
+   "id": "flower",
+   "name": "花屋",
+   "sign": "HD 花店",
+   "w": 9.0,
+   "d": 8.0,
+   "h": 4.3,
+   "roof": "hip",
+   "fence": "low",
+   "nodes": [
+    "Static",
+    "Sign"
+   ],
+   "tris": {
+    "Static": 1414,
+    "Sign": 118
+   },
+   "tris_total": 1532,
+   "text_tris": 106
+  },
+  {
+   "id": "denki",
+   "name": "電気屋",
+   "sign": "HD 電器",
+   "w": 10.0,
+   "d": 8.5,
+   "h": 4.0,
+   "roof": "shed",
+   "fence": "lottery",
+   "nodes": [
+    "Static",
+    "Sign"
+   ],
+   "tris": {
+    "Static": 347,
+    "Sign": 300
+   },
+   "tris_total": 647,
+   "text_tris": 329
+  },
+  {
+   "id": "clinic",
+   "name": "町の病院",
+   "sign": "カピバラ医院",
+   "w": 11.0,
+   "d": 9.0,
+   "h": 4.0,
+   "roof": "shed",
+   "fence": "lottery",
+   "nodes": [
+    "Static",
+    "Sign"
+   ],
+   "tris": {
+    "Static": 370,
+    "Sign": 204
+   },
+   "tris_total": 574,
+   "text_tris": 156
+  },
+  {
+   "id": "salon",
+   "name": "美容室",
+   "sign": [
+    "hair salon  HD",
+    "HD"
+   ],
+   "w": 9.5,
+   "d": 8.0,
+   "h": 4.0,
+   "roof": "shed",
+   "fence": "low",
+   "nodes": [
+    "Static",
+    "Sign"
+   ],
+   "tris": {
+    "Static": 320,
+    "Sign": 216
+   },
+   "tris_total": 536,
+   "text_tris": 270
+  },
+  {
+   "id": "koumuten",
+   "name": "工務店",
+   "sign": "HD 工務店",
+   "w": 10.5,
+   "d": 9.0,
+   "h": 4.0,
+   "roof": "shed",
+   "fence": "lottery",
+   "nodes": [
+    "Static",
+    "Sign"
+   ],
+   "tris": {
+    "Static": 522,
+    "Sign": 155
+   },
+   "tris_total": 677,
+   "text_tris": 143
+  },
+  {
+   "id": "cake",
+   "name": "ケーキ屋",
+   "sign": [
+    "HD",
+    "patisserie"
+   ],
+   "w": 9.0,
+   "d": 8.5,
+   "h": 4.3,
+   "roof": "hip",
+   "fence": "low",
+   "nodes": [
+    "Static",
+    "Sign"
+   ],
+   "tris": {
+    "Static": 782,
+    "Sign": 427
+   },
+   "tris_total": 1209,
+   "text_tris": 211
+  },
+  {
+   "id": "conbini",
+   "name": "コンビニ",
+   "sign": "HD マート 24",
+   "w": 11.0,
+   "d": 9.0,
+   "h": 4.2,
+   "front": 0.5,
+   "lz": -3.0,
+   "park_depth": 6.0,
+   "roof": "flat",
+   "fence": "none",
+   "nodes": [
+    "Static",
+    "Sign",
+    "Open24"
+   ],
+   "tris": {
+    "Static": 408,
+    "Sign": 254,
+    "Open24": 24
+   },
+   "tris_total": 686,
+   "text_tris": 114
+  },
+  {
+   "id": "office",
+   "name": "小さいオフィスビル",
+   "sign": "HD BLDG",
+   "w": 10.0,
+   "d": 9.0,
+   "h": 15.0,
+   "roof": "flat",
+   "fence": "low",
+   "nodes": [
+    "Static",
+    "Sign",
+    "Windows"
+   ],
+   "tris": {
+    "Static": 884,
+    "Sign": 345,
+    "Windows": 192
+   },
+   "tris_total": 1421,
+   "text_tris": 321
+  }
+ ]
+}
