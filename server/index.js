@@ -19,12 +19,13 @@ const { WebSocketServer } = require("ws");
 
 const PORT = Number(process.env.PORT) || 8787;
 const PROTO_V = 4;   // welcome{v}。1＝初版、2＝64KB 上限＋bye（#28）、3＝seatInfo に build（#29 §1）、4＝N 席・from/to（#44）
+// #118：seatInfo に proto（アプリの通信の形式の番号）を足したが、v は 4 のまま（足しただけで古いアプリも動く。proto が無ければアプリは build で比べる）
 const PING_MS = 5000, DEAD_MS = 30000, SEAT_HOLD_MS = 30000, ROOM_TTL_MS = 2 * 60 * 60 * 1000;
 const MAX_BYTES = 64 * 1024, MAX_BUFFERED = 64 * 1024;   // sync（荷物 150 件 ≈ 20KB）が通るよう 64KB（docs/38 の 4KB から変更。#28）
 const MAX_OF = mode => mode === "battle" ? 4 : 2;
 
 const rooms = new Map();   // code → room
-// Seat: { seat, clientId, name, equipped, paint, build, ws|null, leftAt|null }
+// Seat: { seat, clientId, name, equipped, paint, build, proto, ws|null, leftAt|null }   // proto：アプリの通信の形式の番号（#118。中継するだけ・サーバーは比べない）
 
 const log = (ev, room, seat, name) => console.log(`${new Date().toISOString()} ${ev} room=${room ? room.code : "-"} seat=${seat === undefined || seat === null ? "-" : seat} name=${name || "-"}`);
 const online = s => !!(s && s.ws && s.ws.readyState === s.ws.OPEN);
@@ -57,7 +58,7 @@ function newCode(){
   }
   return null;
 }
-const seatInfo = s => s ? { seat:s.seat, name:s.name, equipped:s.equipped, paint:s.paint, build:s.build, clientId:s.clientId, online: online(s) } : null;
+const seatInfo = s => s ? { seat:s.seat, name:s.name, equipped:s.equipped, paint:s.paint, build:s.build, proto:s.proto, clientId:s.clientId, online: online(s) } : null;
 const gone = s => !s || (!s.ws && s.leftAt && now() - s.leftAt > SEAT_HOLD_MS);
 
 function attach(ws, room, seat, back){
@@ -69,9 +70,9 @@ function attach(ws, room, seat, back){
 }
 
 function onHello(ws, m){
-  const { room: code, clientId, name, equipped, paint, build } = m;
+  const { room: code, clientId, name, equipped, paint, build, proto } = m;
   if(typeof clientId !== "string" || !clientId){ send(ws, { t:"error", code:"bad_hello" }); return ws.close(); }
-  const info = { seat:0, clientId, name: String(name || "").slice(0, 8), equipped: equipped || null, paint: paint || null, build: build || null, ws:null, leftAt:null };
+  const info = { seat:0, clientId, name: String(name || "").slice(0, 8), equipped: equipped || null, paint: paint || null, build: build || null, proto: Number.isInteger(proto) ? proto : null, ws:null, leftAt:null };
   if(!code){
     const c = newCode();
     if(!c){ send(ws, { t:"error", code:"full" }); return ws.close(); }
@@ -88,7 +89,7 @@ function onHello(ws, m){
     if(s.clientId === clientId){
       if(room.locked && !online(s) && room.mode === "battle"){ send(ws, { t:"error", code:"in_progress" }); return ws.close(); }
       if(s.ws && s.ws !== ws){ try{ s.ws.seat = null; s.ws.terminate(); }catch(e){} }
-      s.name = info.name; s.equipped = info.equipped; s.paint = info.paint; s.build = info.build;
+      s.name = info.name; s.equipped = info.equipped; s.paint = info.paint; s.build = info.build; s.proto = info.proto;
       log("rejoin", room, s.seat, s.name);
       return attach(ws, room, s, true);
     }
