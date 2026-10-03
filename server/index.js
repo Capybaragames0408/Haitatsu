@@ -7,14 +7,17 @@
    - ping/pong 5s、30s 無応答で terminate。席は切断後 30s 保持（clientId で復帰。古い半開きは閉じて新しい方に席）
    - 全員不在 30s か作成 2h で部屋削除。ホストが切断のまま 30s → 全員へ peer{kind:"leave", seat:0} を送って部屋削除
    - 64KB 上限（sync のため）・JSON 以外は切断・bufferedAmount > 64KB で pose を捨てる（宛先ごと）
-   - welcome{v, role, seat, code, mode, max, locked, peers:[seatInfo…]}／peer{kind:join|leave|back, seat, info, bye}／error{code}（no_room / full / no_host / in_progress / bad_hello）
+   - welcome{v, role, seat, code, mode, max, locked, peers:[seatInfo…]}／peer{kind:join|leave|back, seat, info, bye}／error{code}（no_room / full / no_host / in_progress / bad_hello / too_many）
+   - too_many（#136 §2）：接続元（X-Forwarded-For の先頭・無ければ接続の住所）ごとに、参加の失敗（no_room）が 10 分に 10 回で、その接続元からの参加を 10 分断る。
+     部屋を作る（room なし）・復帰（同じ clientId の席がある）は数えない・断らない。数える箱は時間で消える。ログの接続元は伏せた形（ハッシュの頭 8 字）
    - bye（#27 §8）：席を即座に空ける（30s の保持なし）。全員へ peer{kind:"leave", bye:true}
    - console.log：部屋の作成・参加・復帰・退室・切断（時刻・部屋コード・席・名前）→ Render の Logs タブ
-   - GET /stats → {rooms, players, list:[{code, mode, names, since}]}（今遊んでいる人）
+   - GET /stats → {rooms, players}（数だけ）。/stats?key=<STATS_KEY> の時だけ list:[{code, mode, names, since}]（#136 §1・環境変数 STATS_KEY が無ければ数だけ）
    - welcome の v（プロトコル版）：2＝64KB＋bye、3＝build の中継、4＝N 席（#44）。クライアントは v が違うと「サーバーが古い／新しい」を出す
    永続化なし。認証なし（友達限定・4 桁コード。docs/38 §10-1） */
 "use strict";
 const http = require("http");
+const crypto = require("crypto");
 const { WebSocketServer } = require("ws");
 
 const PORT = Number(process.env.PORT) || 8787;
@@ -23,6 +26,8 @@ const PROTO_V = 4;   // welcome{v}。1＝初版、2＝64KB 上限＋bye（#28）
 const PING_MS = 5000, DEAD_MS = 30000, SEAT_HOLD_MS = 30000, ROOM_TTL_MS = 2 * 60 * 60 * 1000;
 const MAX_BYTES = 64 * 1024, MAX_BUFFERED = 64 * 1024;   // sync（荷物 150 件 ≈ 20KB）が通るよう 64KB（docs/38 の 4KB から変更。#28）
 const MAX_OF = mode => mode === "battle" ? 4 : 2;
+const STATS_KEY = process.env.STATS_KEY || "";                                  // #136 §1：/stats の一覧を見る合言葉（Render の環境変数）
+const FAIL_WINDOW_MS = Number(process.env.FAIL_WINDOW_MS) || 10 * 60 * 1000, FAIL_MAX = 10, BLOCK_MS = Number(process.env.BLOCK_MS) || 10 * 60 * 1000;   // #136 §2：参加の失敗 10 分に 10 回 → 10 分断る（環境変数は確かめ用・ふだんは入れない）
 
 const rooms = new Map();   // code → room
 // Seat: { seat, clientId, name, equipped, paint, build, proto, ws|null, leftAt|null }   // proto：アプリの通信の形式の番号（#118。中継するだけ・サーバーは比べない）
@@ -30,6 +35,9 @@ const rooms = new Map();   // code → room
 const log = (ev, room, seat, name) => console.log(`${new Date().toISOString()} ${ev} room=${room ? room.code : "-"} seat=${seat === undefined || seat === null ? "-" : seat} name=${name || "-"}`);
 const online = s => !!(s && s.ws && s.ws.readyState === s.ws.OPEN);
 const seatsOf = room => room.seats.filter(Boolean);
+// 合言葉を時間の差で当てられないように比べる（長さをそろえるため両方を sha256 にしてから）
+const sha = s => crypto.createHash("sha256").update(String(s)).digest();
+const keyOk = k => !!STATS_KEY && typeof k === "string" && k !== "" && crypto.timingSafeEqual(sha(k), sha(STATS_KEY));
 function stats(){
   const list = [];
   let players = 0;
@@ -41,8 +49,12 @@ function stats(){
   return { rooms: rooms.size, players, list };
 }
 const server = http.createServer((req, res) => {
-  if(req.url === "/health" || req.url === "/"){ res.writeHead(200, { "Content-Type":"text/plain" }); res.end("ok"); return; }
-  if(req.url === "/stats"){ res.writeHead(200, { "Content-Type":"application/json; charset=utf-8" }); res.end(JSON.stringify(stats(), null, 2)); return; }
+  let u; try{ u = new URL(req.url, "http://relay"); }catch(e){ res.writeHead(400); res.end(); return; }
+  if(u.pathname === "/health" || u.pathname === "/"){ res.writeHead(200, { "Content-Type":"text/plain" }); res.end("ok"); return; }
+  if(u.pathname === "/stats"){                                                  // 合言葉なし（まちがい・STATS_KEY が無い時も）は数だけ
+    const s = stats(), body = keyOk(u.searchParams.get("key")) ? s : { rooms: s.rooms, players: s.players };
+    res.writeHead(200, { "Content-Type":"application/json; charset=utf-8", "Cache-Control":"no-store" }); res.end(JSON.stringify(body, null, 2)); return;
+  }
   res.writeHead(404); res.end();
 });
 const wss = new WebSocketServer({ server, maxPayload: MAX_BYTES });
@@ -60,6 +72,18 @@ function newCode(){
 }
 const seatInfo = s => s ? { seat:s.seat, name:s.name, equipped:s.equipped, paint:s.paint, build:s.build, proto:s.proto, clientId:s.clientId, online: online(s) } : null;
 const gone = s => !s || (!s.ws && s.leftAt && now() - s.leftAt > SEAT_HOLD_MS);
+
+// ---- 部屋コードの総当たり（#136 §2）：接続元ごとの参加の失敗 ----
+const fails = new Map();   // ip → { at:[失敗の時刻…], until:断る終わりの時刻 }
+const ipOf = req => { const f = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim(); return f || (req.socket && req.socket.remoteAddress) || "?"; };
+const maskIp = ip => sha("hdsim:" + ip).toString("hex").slice(0, 8);         // ログに接続元をそのまま書かない
+const blocked = ip => { const f = fails.get(ip); return !!(f && f.until > now()); };
+function noteFail(ip){
+  const t = now(), f = fails.get(ip) || { at: [], until: 0 };
+  f.at = f.at.filter(x => t - x < FAIL_WINDOW_MS); f.at.push(t);
+  if(f.at.length >= FAIL_MAX){ f.until = t + BLOCK_MS; f.at = []; console.log(`${new Date().toISOString()} too_many from=${maskIp(ip)}`); }
+  fails.set(ip, f);
+}
 
 function attach(ws, room, seat, back){
   ws.room = room; ws.seat = seat; seat.ws = ws; seat.leftAt = null;
@@ -83,7 +107,9 @@ function onHello(ws, m){
     return attach(ws, room, info, false);
   }
   const room = rooms.get(String(code));
-  if(!room){ send(ws, { t:"error", code:"no_room" }); return ws.close(); }
+  const back = !!room && seatsOf(room).some(s => s.clientId === clientId);   // 復帰は数えない・断らない
+  if(!back && blocked(ws.ip)){ send(ws, { t:"error", code:"too_many" }); return ws.close(); }
+  if(!room){ noteFail(ws.ip); send(ws, { t:"error", code:"no_room" }); return ws.close(); }
   // 同じ clientId の席があれば復帰（古い半開きソケットは閉じて新しい方に席）。バトル開始後（locked）は復帰も不可（#43 §4）
   for(const s of seatsOf(room)){
     if(s.clientId === clientId){
@@ -104,7 +130,8 @@ function onHello(ws, m){
   attach(ws, room, info, false);
 }
 
-wss.on("connection", ws => {
+wss.on("connection", (ws, req) => {
+  ws.ip = ipOf(req);                                                            // #136 §2（Render の前の中継の後ろなので X-Forwarded-For の先頭）
   ws.lastPong = now();
   ws.on("pong", () => { ws.lastPong = now(); });
   ws.on("message", (data, isBinary) => {
@@ -158,6 +185,7 @@ setInterval(() => {
 }, PING_MS);
 setInterval(() => {
   const t = now();
+  for(const [ip, f] of fails) if(f.until <= t && !f.at.some(x => t - x < FAIL_WINDOW_MS)) fails.delete(ip);   // 数える箱は時間で消える
   for(const [code, room] of rooms){
     const seats = seatsOf(room);
     if(seats.every(gone) || t - room.createdAt > ROOM_TTL_MS){
