@@ -1,0 +1,1 @@
+import{t as e}from"./supabaseProjects-D2PtZLPG.js";var t=e.url,n=e.key;export{t as n,n as t};
