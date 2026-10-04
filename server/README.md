@@ -35,6 +35,6 @@ iOS 実機は `Info.plist` の `NSAllowsLocalNetworking` で LAN の平文 `ws:/
 - `hello` 以外は中身を見ずに相手へ転送。相手不在なら捨てる。`pose` は相手の送信バッファが 64KB を超えていれば捨てる。
 - 64KB 上限（`sync` は荷物 150 件で約 20KB）、JSON 以外は切断。ping 5s、無応答で terminate。席は切断後 30s 保持（同じ `clientId` で復帰。古い半開きは閉じる）。
 - `peerLeft{role, hold}`／`error{code: no_room | full | no_host | in_progress | bad_hello | too_many}`。両方不在 30s か作成 2h で部屋削除。
-- **too_many（#136・部屋コードの総当たりを止める）**：接続元（`X-Forwarded-For` の先頭・無ければ接続の住所）ごとに、参加の失敗（`no_room`）が 10 分に 10 回で、その接続元からの参加（`room` 付きの hello）を 10 分断る。部屋を作る（`room` なし）と復帰（同じ `clientId` の席がある）は数えない・断らない。数える箱は時間で消える。Logs には `too_many from=<伏せた接続元（ハッシュの頭 8 字）>`。
+- **too_many（#136・部屋コードの総当たりを止める）**：接続元（Cloudflare が付ける `cf-connecting-ip`・無ければ接続の住所。`X-Forwarded-For` は送る側が先頭を変えられるので見ない・#139）ごとに、参加の失敗（`no_room`）が 10 分に 10 回で、その接続元からの参加（`room` 付きの hello）を 10 分断る。部屋を作る（`room` なし）と復帰（同じ `clientId` の席がある）は数えない・断らない。数える箱は時間で消える。Logs には `too_many from=<伏せた接続元（ハッシュの頭 8 字）>`。
   - 古いアプリ（#136 より前）は too_many を知らないので「エラー: too_many」と出て部屋を出る（1 人プレイ・ほかの機能はそのまま）。新しいアプリは「しばらくしてから、もう一度お試しください」。
   - 確かめ用の環境変数 `BLOCK_MS`・`FAIL_WINDOW_MS`（ミリ秒）は、ふだんは入れない（入れなければ 10 分）。

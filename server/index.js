@@ -8,7 +8,7 @@
    - 全員不在 30s か作成 2h で部屋削除。ホストが切断のまま 30s → 全員へ peer{kind:"leave", seat:0} を送って部屋削除
    - 64KB 上限（sync のため）・JSON 以外は切断・bufferedAmount > 64KB で pose を捨てる（宛先ごと）
    - welcome{v, role, seat, code, mode, max, locked, peers:[seatInfo…]}／peer{kind:join|leave|back, seat, info, bye}／error{code}（no_room / full / no_host / in_progress / bad_hello / too_many）
-   - too_many（#136 §2）：接続元（X-Forwarded-For の先頭・無ければ接続の住所）ごとに、参加の失敗（no_room）が 10 分に 10 回で、その接続元からの参加を 10 分断る。
+   - too_many（#136 §2）：接続元（cf-connecting-ip・無ければ接続の住所。#139）ごとに、参加の失敗（no_room）が 10 分に 10 回で、その接続元からの参加を 10 分断る。
      部屋を作る（room なし）・復帰（同じ clientId の席がある）は数えない・断らない。数える箱は時間で消える。ログの接続元は伏せた形（ハッシュの頭 8 字）
    - bye（#27 §8）：席を即座に空ける（30s の保持なし）。全員へ peer{kind:"leave", bye:true}
    - console.log：部屋の作成・参加・復帰・退室・切断（時刻・部屋コード・席・名前）→ Render の Logs タブ
@@ -75,7 +75,8 @@ const gone = s => !s || (!s.ws && s.leftAt && now() - s.leftAt > SEAT_HOLD_MS);
 
 // ---- 部屋コードの総当たり（#136 §2）：接続元ごとの参加の失敗 ----
 const fails = new Map();   // ip → { at:[失敗の時刻…], until:断る終わりの時刻 }
-const ipOf = req => { const f = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim(); return f || (req.socket && req.socket.remoteAddress) || "?"; };
+// #139：接続元は Cloudflare が毎回付け直す cf-connecting-ip（送る側は変えられない）。無い時（Mac の LAN テスト）は接続の住所。X-Forwarded-For は送る側が先頭を好きにできるので見ない
+const ipOf = req => { const c = String(req.headers["cf-connecting-ip"] || "").trim(); return c || (req.socket && req.socket.remoteAddress) || "?"; };
 const maskIp = ip => sha("hdsim:" + ip).toString("hex").slice(0, 8);         // ログに接続元をそのまま書かない
 const blocked = ip => { const f = fails.get(ip); return !!(f && f.until > now()); };
 function noteFail(ip){
@@ -131,7 +132,7 @@ function onHello(ws, m){
 }
 
 wss.on("connection", (ws, req) => {
-  ws.ip = ipOf(req);                                                            // #136 §2（Render の前の中継の後ろなので X-Forwarded-For の先頭）
+  ws.ip = ipOf(req);                                                            // #136 §2・#139（cf-connecting-ip・無ければ接続の住所）
   ws.lastPong = now();
   ws.on("pong", () => { ws.lastPong = now(); });
   ws.on("message", (data, isBinary) => {
