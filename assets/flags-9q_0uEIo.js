@@ -1,0 +1,1 @@
+var e=`sb-haitatsu-sandbox-auth`;export{e as t};
