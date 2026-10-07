@@ -1,0 +1,1 @@
+import{t as e}from"./supabaseProjects-BTnlrJOV.js";var t=e.url,n=e.key;export{t as n,n as t};
