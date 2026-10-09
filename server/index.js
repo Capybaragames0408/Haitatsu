@@ -32,7 +32,7 @@ const FAIL_WINDOW_MS = Number(process.env.FAIL_WINDOW_MS) || 10 * 60 * 1000, FAI
 const rooms = new Map();   // code → room
 // Seat: { seat, clientId, name, equipped, paint, build, proto, ws|null, leftAt|null }   // proto：アプリの通信の形式の番号（#118。中継するだけ・サーバーは比べない）
 
-const log = (ev, room, seat, name) => console.log(`${new Date().toISOString()} ${ev} room=${room ? room.code : "-"} seat=${seat === undefined || seat === null ? "-" : seat} name=${name || "-"}`);
+const log = (ev, room, seat) => console.log(`${new Date().toISOString()} ${ev} room=${room ? room.code : "-"} seat=${seat === undefined || seat === null ? "-" : seat}`);   // #174 ④：ドライバー名はログに書かない（時刻・部屋・席・出来事だけ）
 const online = s => !!(s && s.ws && s.ws.readyState === s.ws.OPEN);
 const seatsOf = room => room.seats.filter(Boolean);
 // 合言葉を時間の差で当てられないように比べる（長さをそろえるため両方を sha256 にしてから）
@@ -77,7 +77,8 @@ const gone = s => !s || (!s.ws && s.leftAt && now() - s.leftAt > SEAT_HOLD_MS);
 const fails = new Map();   // ip → { at:[失敗の時刻…], until:断る終わりの時刻 }
 // #139：接続元は Cloudflare が毎回付け直す cf-connecting-ip（送る側は変えられない）。無い時（Mac の LAN テスト）は接続の住所。X-Forwarded-For は送る側が先頭を好きにできるので見ない
 const ipOf = req => { const c = String(req.headers["cf-connecting-ip"] || "").trim(); return c || (req.socket && req.socket.remoteAddress) || "?"; };
-const maskIp = ip => sha("hdsim:" + ip).toString("hex").slice(0, 8);         // ログに接続元をそのまま書かない
+const IP_SALT = crypto.randomBytes(16).toString("hex");                      // #174 ④：起動ごとのランダムな塩（ログのハッシュから IP を総当たりで戻せない・環境変数は増やさない）
+const maskIp = ip => sha("hdsim:" + IP_SALT + ":" + ip).toString("hex").slice(0, 8);   // ログに接続元をそのまま書かない
 const blocked = ip => { const f = fails.get(ip); return !!(f && f.until > now()); };
 function noteFail(ip){
   const t = now(), f = fails.get(ip) || { at: [], until: 0 };
@@ -104,7 +105,7 @@ function onHello(ws, m){
     const mode = (m.create && m.create.mode === "battle") ? "battle" : "coop";
     const room = { code:c, mode, max:MAX_OF(mode), seats:[info], locked:false, createdAt: now(), lastActive: now() };
     rooms.set(c, room);
-    log("create", room, 0, info.name);
+    log("create", room, 0);
     return attach(ws, room, info, false);
   }
   const room = rooms.get(String(code));
@@ -117,7 +118,7 @@ function onHello(ws, m){
       if(room.locked && !online(s) && room.mode === "battle"){ send(ws, { t:"error", code:"in_progress" }); return ws.close(); }
       if(s.ws && s.ws !== ws){ try{ s.ws.seat = null; s.ws.terminate(); }catch(e){} }
       s.name = info.name; s.equipped = info.equipped; s.paint = info.paint; s.build = info.build; s.proto = info.proto;
-      log("rejoin", room, s.seat, s.name);
+      log("rejoin", room, s.seat);
       return attach(ws, room, s, true);
     }
   }
@@ -127,7 +128,7 @@ function onHello(ws, m){
   for(let i = 1; i < room.max; i++){ if(gone(room.seats[i])){ idx = i; break; } }   // 空席（保持切れの席も空き）
   if(idx < 0){ send(ws, { t:"error", code:"full" }); return ws.close(); }
   info.seat = idx; room.seats[idx] = info;
-  log("join", room, idx, info.name);
+  log("join", room, idx);
   attach(ws, room, info, false);
 }
 
@@ -146,8 +147,8 @@ wss.on("connection", (ws, req) => {
     const room = ws.room, seat = ws.seat; if(!room || !seat) return;
     room.lastActive = now();
     if(seat.seat === 0){                                                        // ホストだけの操作
-      if(m.t === "lock"){ room.locked = true; log("lock", room, 0, seat.name); return; }
-      if(m.t === "unlock"){ room.locked = false; log("unlock", room, 0, seat.name); return; }
+      if(m.t === "lock"){ room.locked = true; log("lock", room, 0); return; }
+      if(m.t === "unlock"){ room.locked = false; log("unlock", room, 0); return; }
       if(m.t === "mode"){ room.mode = m.mode === "battle" ? "battle" : "coop"; room.max = MAX_OF(room.mode); room.seats.length = Math.max(room.seats.length, 1); }   // 切替（max は次の参加から効く）
     }
     m.from = seat.seat;
@@ -168,7 +169,7 @@ function detach(ws, bye = false){
   if(!room || !seat || seat.ws !== ws) return;
   seat.ws = null; seat.leftAt = now();
   ws.seat = null; ws.room = null;
-  log(bye ? "leave" : "disconnect", room, seat.seat, seat.name);
+  log(bye ? "leave" : "disconnect", room, seat.seat);
   if(bye) room.seats[seat.seat] = null;                                        // 精算＝退室：席を即座に空ける（再入室は新しい席で）
   sendAll(room, { t:"peer", kind:"leave", seat:seat.seat, hold: bye ? 0 : SEAT_HOLD_MS, bye }, seat);
   if(seatsOf(room).length === 0){ rooms.delete(room.code); return; }
